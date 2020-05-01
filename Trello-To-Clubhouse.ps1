@@ -16,7 +16,8 @@ function ConvertTo-ClubHouseStory([psobject]$trelloCard) {
     New-Story `
         -Name $trelloCard.name `
         -ProjectId $ClubhouseProjectId `
-        -Created $action.date
+        -Created $action.date `
+        -Updated $trelloCard.dateLastActivity
 }
 
 foreach ($card in $trelloSrcObj.Cards) {
