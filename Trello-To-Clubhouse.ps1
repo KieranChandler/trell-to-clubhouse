@@ -1,5 +1,7 @@
 param (
     [string]
+    $ClubhouseApiToken,
+    [string]
     $TrelloSrcJson,
     [string]
     $ClubhouseProjectId
@@ -10,10 +12,11 @@ param (
 
 $trelloSrcObj = ($TrelloSrcJson | ConvertFrom-Json)
 
-function ConvertTo-ClubHouseStory([psobject]$trelloCard) {
+function ConvertTo-ClubHouseStory([string]$ApiToken, [psobject]$trelloCard) {
     $action = (GetCardCreatedAction -cardId $trelloCard.id -allActions $trelloSrcObj.actions)
 
     New-Story `
+        -ApiToken $ApiToken `
         -Name $trelloCard.name `
         -ProjectId $ClubhouseProjectId `
         -Created $action.date `
@@ -23,6 +26,6 @@ function ConvertTo-ClubHouseStory([psobject]$trelloCard) {
 foreach ($card in $trelloSrcObj.Cards) {
     $isNotAnArchivedCard = -not $card.closed
     if ($isNotAnArchivedCard) {
-        ConvertTo-ClubHouseStory $card
+        ConvertTo-ClubHouseStory $ClubhouseApiToken $card
     }
 }
