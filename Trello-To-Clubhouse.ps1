@@ -5,7 +5,8 @@ param (
     $TrelloSrcJson,
     [string]
     $ClubhouseProjectId,
-    $TrelloToClubhouseUserMap
+    $TrelloToClubhouseUserMap,
+    $WorkflowStateMap
 )
 
 . "./Trello.ps1"
@@ -21,7 +22,7 @@ function FromTrelloUserIdToClubhouseUserId($TrelloUserId, $Users) {
     }
 }
 
-function ConvertTo-ClubHouseStory([string]$ApiToken, [psobject]$trelloCard, $Users) {
+function ConvertTo-ClubHouseStory([string]$ApiToken, [psobject]$trelloCard, $Users, $WorkflowStateMap) {
     $action = (GetCardCreatedAction -cardId $trelloCard.id -allActions $trelloSrcObj.actions)
 
     $ownerIds = ($trelloCard.idMembers `
@@ -32,6 +33,8 @@ function ConvertTo-ClubHouseStory([string]$ApiToken, [psobject]$trelloCard, $Use
         }) `
         | Select-Object -ExpandProperty ClubhouseUserId
 
+    $workflowState = ($WorkflowStateMap | Where-Object trelloListId -eq $trelloCard.idList).clubhouseStateId
+
     New-Story `
         -ApiToken $ApiToken `
         -Name $trelloCard.name `
@@ -39,12 +42,13 @@ function ConvertTo-ClubHouseStory([string]$ApiToken, [psobject]$trelloCard, $Use
         -ProjectId $ClubhouseProjectId `
         -Created $action.date `
         -Updated $trelloCard.dateLastActivity `
-        -OwnerIds $ownerIds
+        -OwnerIds $ownerIds `
+        -WorkflowStateId $workflowState
 }
 
 foreach ($card in $trelloSrcObj.Cards) {
     $isNotAnArchivedCard = -not $card.closed
     if ($isNotAnArchivedCard) {
-        ConvertTo-ClubHouseStory $ClubhouseApiToken $card $TrelloToClubhouseUserMap
+        ConvertTo-ClubHouseStory $ClubhouseApiToken $card $TrelloToClubhouseUserMap $WorkflowStateMap
     }
 }

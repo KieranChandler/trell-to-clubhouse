@@ -5,7 +5,8 @@ function New-Story(
     [string] $Created,
     [string] $Updated,
     [string] $ProjectId,
-    [string[]] $OwnerIds
+    [string[]] $OwnerIds,
+    [int] $WorkflowStateId
 ) {
     $requestBody = [PSCustomObject]@{
         name       = $Name
@@ -14,6 +15,7 @@ function New-Story(
         created_at = $Created
         updated_at = $Updated
         owner_ids = $OwnerIds
+        workflow_state_id = $WorkflowStateId
     } | ConvertTo-Json
 
     $response = Invoke-WebRequest `
