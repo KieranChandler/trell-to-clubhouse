@@ -35,6 +35,7 @@ function ConvertTo-ClubHouseStory([string]$ApiToken, [psobject]$trelloCard, $Use
     New-Story `
         -ApiToken $ApiToken `
         -Name $trelloCard.name `
+        -Description $trelloCard.desc`
         -ProjectId $ClubhouseProjectId `
         -Created $action.date `
         -Updated $trelloCard.dateLastActivity `

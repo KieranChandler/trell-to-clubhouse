@@ -1,6 +1,7 @@
 function New-Story(
     [string] $ApiToken,
     [string] $Name,
+    [string] $Description,
     [string] $Created,
     [string] $Updated,
     [string] $ProjectId,
@@ -8,6 +9,7 @@ function New-Story(
 ) {
     $requestBody = [PSCustomObject]@{
         name       = $Name
+        description = $Description
         project_id = $ProjectId
         created_at = $Created
         updated_at = $Updated
