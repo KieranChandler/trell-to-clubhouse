@@ -20,6 +20,14 @@ function New-Story(
         }
     }
 
+    if ([string]::IsNullOrWhiteSpace($Created)) {
+        $Created = "0001-01-01T00:00:00.000Z"
+    }
+
+    if ([string]::IsNullOrWhiteSpace($Updated)) {
+        $Updated = "0001-01-01T00:00:00.000Z"
+    }
+
     $requestBody = [PSCustomObject]@{
         name       = $Name
         description = $Description
