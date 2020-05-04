@@ -51,7 +51,8 @@ function ConvertTo-ClubHouseStory([string]$ApiToken, [psobject]$trelloCard, $Use
 
 foreach ($card in $trelloSrcObj.Cards) {
     $isNotAnArchivedCard = -not $card.closed
-    if ($isNotAnArchivedCard) {
+    $isNotAMilestoneCard = $card.idList -ne "5e0010e3d50d53272ede97d4"
+    if ($isNotAnArchivedCard -and $isNotAMilestoneCard) {
         ConvertTo-ClubHouseStory $ClubhouseApiToken $card $TrelloToClubhouseUserMap $WorkflowStateMap
     }
 }
