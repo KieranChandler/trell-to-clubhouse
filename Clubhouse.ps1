@@ -6,8 +6,20 @@ function New-Story(
     [string] $Updated,
     [string] $ProjectId,
     [string[]] $OwnerIds,
+    [string[]] $LabelNames,
     [int] $WorkflowStateId
 ) {
+    if ($null -eq $LabelNames) {
+        $LabelNames = @()
+    }
+    else {
+        [PSCustomObject[]]$labels = $LabelNames | Select-Object `
+        @{
+            N = "name";
+            E = { $_ }
+        }
+    }
+
     $requestBody = [PSCustomObject]@{
         name       = $Name
         description = $Description
@@ -16,6 +28,7 @@ function New-Story(
         updated_at = $Updated
         owner_ids = $OwnerIds
         workflow_state_id = $WorkflowStateId
+        labels  = $labels
     } | ConvertTo-Json
 
     $response = Invoke-WebRequest `

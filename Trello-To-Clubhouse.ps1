@@ -35,6 +35,8 @@ function ConvertTo-ClubHouseStory([string]$ApiToken, [psobject]$trelloCard, $Use
 
     $workflowState = ($WorkflowStateMap | Where-Object trelloListId -eq $trelloCard.idList).clubhouseStateId
 
+    $labelNames = $trelloCard.labels | Select-Object -ExpandProperty name
+
     New-Story `
         -ApiToken $ApiToken `
         -Name $trelloCard.name `
@@ -43,7 +45,8 @@ function ConvertTo-ClubHouseStory([string]$ApiToken, [psobject]$trelloCard, $Use
         -Created $action.date `
         -Updated $trelloCard.dateLastActivity `
         -OwnerIds $ownerIds `
-        -WorkflowStateId $workflowState
+        -WorkflowStateId $workflowState `
+        -LabelNames $labelNames
 }
 
 foreach ($card in $trelloSrcObj.Cards) {
