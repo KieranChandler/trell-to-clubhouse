@@ -1,5 +1,5 @@
 function SimplifyWebResponse($WebResponse) {
-    $WebResponse | Select-Object StatusCode,StatusDescription,Content | ConvertTo-Json
+    $WebResponse | Select-Object StatusCode, StatusDescription, Content | ConvertTo-Json
 }
 
 function Get-EpicId(
@@ -81,14 +81,14 @@ function New-Story(
     }
 
     $requestBody = [PSCustomObject]@{
-        name       = $Name
-        description = $Description
-        project_id = $ProjectId
-        created_at = $Created
-        updated_at = $Updated
-        owner_ids = $OwnerIds
+        name              = $Name
+        description       = $Description
+        project_id        = $ProjectId
+        created_at        = $Created
+        updated_at        = $Updated
+        owner_ids         = $OwnerIds
         workflow_state_id = $WorkflowStateId
-        labels  = $labels
+        labels            = $labels
     } | ConvertTo-Json
 
     Write-Host
@@ -145,12 +145,12 @@ function New-Epic(
     }
 
     $requestBody = [PSCustomObject]@{
-        name       = $Name
+        name        = $Name
         description = $Description
-        created_at = $Created
-        updated_at = $Updated
-        owner_ids = $OwnerIds
-        labels  = $labels
+        created_at  = $Created
+        updated_at  = $Updated
+        owner_ids   = $OwnerIds
+        labels      = $labels
     } | ConvertTo-Json
 
     Write-Host
