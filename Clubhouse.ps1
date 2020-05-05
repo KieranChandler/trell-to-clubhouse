@@ -2,6 +2,24 @@ function SimplifyWebResponse($WebResponse) {
     $WebResponse | Select-Object StatusCode,StatusDescription,Content | ConvertTo-Json
 }
 
+function Get-EpicId(
+    [string] $ApiToken,
+    [string] $Name
+) {
+    Write-Host
+    Write-Host "Getting epic Id from Clubhouse API.."
+    $response = Invoke-WebRequest `
+        -Uri "https://api.clubhouse.io/api/v3/epics?token=$ApiToken" `
+        -Method "GET" `
+        -ContentType "application/json" `
+        -Body $requestBody `
+        -UseBasicParsing
+
+    ($response.Content | ConvertFrom-Json `
+        | Where-Object { $_.name -eq $Name } `
+        | Select-Object -ExpandProperty id)
+}
+
 function New-Story(
     [string] $ApiToken,
     [string] $Name,
