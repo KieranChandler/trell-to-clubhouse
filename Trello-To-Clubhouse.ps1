@@ -25,13 +25,14 @@ function FromTrelloUserIdToClubhouseUserId($TrelloUserId, $Users) {
 function ConvertTo-ClubHouseStory([string]$ApiToken, [psobject]$trelloCard, $Users, $WorkflowStateMap) {
     $action = (GetCardCreatedAction -cardId $trelloCard.id -allActions $trelloSrcObj.actions)
 
-    $ownerIds = ($trelloCard.idMembers `
+    $ownerIds = $trelloCard.idMembers `
         | Select-Object `
         @{
             N = "ClubhouseUserId";
             E = { FromTrelloUserIdToClubhouseUserId -TrelloUserId $_ -Users $TrelloToClubhouseUserMap }
-        }) `
-        | Select-Object -ExpandProperty ClubhouseUserId
+        } `
+        | Select-Object -ExpandProperty ClubhouseUserId `
+        | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
 
     $workflowState = ($WorkflowStateMap | Where-Object trelloListId -eq $trelloCard.idList).clubhouseStateId
 
