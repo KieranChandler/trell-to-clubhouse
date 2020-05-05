@@ -82,7 +82,7 @@ function ConvertTo-ClubHouseEpic([string]$ApiToken, [psobject]$trelloCard, $User
 
     $labelNames = $trelloCard.labels | Select-Object -ExpandProperty name
 
-    New-Epic `
+    $newEpicId = New-Epic `
         -ApiToken $ApiToken `
         -Name $trelloCard.name `
         -Description $trelloCard.desc`
@@ -90,6 +90,23 @@ function ConvertTo-ClubHouseEpic([string]$ApiToken, [psobject]$trelloCard, $User
         -Updated $trelloCard.dateLastActivity `
         -OwnerIds $ownerIds `
         -LabelNames $labelNames
+
+    $commentActions = Get-CardCommentActions `
+        -CardId $trelloCard.id `
+        -AllActions $trelloSrcObj.actions
+
+    foreach ($commentAction in $commentActions) {
+        $commentAuthor = FromTrelloUserIdToClubhouseUserId `
+            -TrelloUserId $commentAction.CommentAuthorUserId `
+            -Users $Users
+
+        New-CommentOnStory `
+            -ApiToken $ApiToken `
+            -StoryId $newEpicId `
+            -CommentAuthor $commentAuthor `
+            -AuthorDate $commentAction.AuthorDate `
+            -CommentContents $commentAction.CommentContents
+    }
 }
 
 $epicListId = "5e0010e3d50d53272ede97d4"

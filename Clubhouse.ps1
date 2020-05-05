@@ -192,4 +192,7 @@ function New-Epic(
         -Body $requestBody `
         -UseBasicParsing
     Write-Host $(SimplifyWebResponse -WebResponse $response)
+
+    $newEpicId = ($response | ConvertFrom-Json).id
+    return $newEpicId
 }
