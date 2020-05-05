@@ -1,6 +1,5 @@
-function SimplifyWebResponse($WebResponse) {
-    $WebResponse | Select-Object StatusCode, StatusDescription, Content | ConvertTo-Json
-}
+. .\Web.ps1
+# . .\Web-Fake.ps1
 
 function Get-EpicId(
     [string] $ApiToken,
@@ -8,12 +7,8 @@ function Get-EpicId(
 ) {
     Write-Host
     Write-Host "Getting epic Id from Clubhouse API.."
-    $response = Invoke-WebRequest `
-        -Uri "https://api.clubhouse.io/api/v3/epics?token=$ApiToken" `
-        -Method "GET" `
-        -ContentType "application/json" `
-        -Body $requestBody `
-        -UseBasicParsing
+    $response = Invoke-GetRequest `
+        -Uri "https://api.clubhouse.io/api/v3/epics?token=$ApiToken"
 
     ($response.Content | ConvertFrom-Json `
         | Where-Object { $_.name -eq $Name } `
@@ -36,13 +31,9 @@ function New-UrlAttachmentToStory(
         story_id = $StoryId
     } | ConvertTo-Json
 
-    $response = Invoke-WebRequest `
+    $response = Invoke-PostRequest `
         -Uri "https://api.clubhouse.io/api/v3/linked-files?token=$ApiToken" `
-        -Method "POST" `
-        -ContentType "application/json" `
-        -Body $fileRequestBody `
-        -UseBasicParsing
-    Write-Host $(SimplifyWebResponse -WebResponse $response)
+        -RequestBodyObj $fileRequestBody
 }
 
 function New-CommentOnStory(
@@ -64,13 +55,9 @@ function New-CommentOnStory(
 
     Write-Host
     Write-Host "Adding comment by $CommentAuthor to story $StoryId via Clubhouse API.."
-    $response = Invoke-WebRequest `
+    $response = Invoke-PostRequest `
         -Uri "https://api.clubhouse.io/api/v3/stories/$($StoryId)/comments?token=$ApiToken" `
-        -Method "POST" `
-        -ContentType "application/json" `
-        -Body $requestBody `
-        -UseBasicParsing
-    Write-Host $(SimplifyWebResponse -WebResponse $response)
+        -RequestBodyObj $requestBody
 }
 
 function New-Story(
@@ -121,13 +108,9 @@ function New-Story(
 
     Write-Host
     Write-Host "Creating story via Clubhouse API.."
-    $response = Invoke-WebRequest `
+    $response = Invoke-PostRequest `
         -Uri "https://api.clubhouse.io/api/v3/stories?token=$ApiToken" `
-        -Method "POST" `
-        -ContentType "application/json" `
-        -Body $requestBody `
-        -UseBasicParsing
-    Write-Host $(SimplifyWebResponse -WebResponse $response)
+        -RequestBodyObj $requestBody
 
     $newStoryId = ($response | ConvertFrom-Json).id
 
@@ -185,13 +168,9 @@ function New-Epic(
 
     Write-Host
     Write-Host "Creating epic via Clubhouse API.."
-    $response = Invoke-WebRequest `
+    $response = Invoke-PostRequest `
         -Uri "https://api.clubhouse.io/api/v3/epics?token=$ApiToken" `
-        -Method "POST" `
-        -ContentType "application/json" `
-        -Body $requestBody `
-        -UseBasicParsing
-    Write-Host $(SimplifyWebResponse -WebResponse $response)
+        -RequestBodyObj $requestBody
 
     $newEpicId = ($response | ConvertFrom-Json).id
     return $newEpicId
