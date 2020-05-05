@@ -45,6 +45,34 @@ function New-UrlAttachmentToStory(
     Write-Host $(SimplifyWebResponse -WebResponse $response)
 }
 
+function New-CommentOnStory(
+    [string] $ApiToken,
+    [string] $StoryId,
+    [string] $CommentAuthor,
+    [string] $AuthorDate,
+    [string] $CommentContents
+) {
+    if ([string]::IsNullOrWhiteSpace($AuthorDate)) {
+        $AuthorDate = "0001-01-01T00:00:00.000Z"
+    }
+
+    $requestBody = [PSCustomObject]@{
+        author_id  = $CommentAuthor
+        created_at = $AuthorDate
+        text       = $CommentContents
+    } | ConvertTo-Json
+
+    Write-Host
+    Write-Host "Adding comment by $CommentAuthor to story $StoryId via Clubhouse API.."
+    $response = Invoke-WebRequest `
+        -Uri "https://api.clubhouse.io/api/v3/stories/$($StoryId)/comments?token=$ApiToken" `
+        -Method "POST" `
+        -ContentType "application/json" `
+        -Body $requestBody `
+        -UseBasicParsing
+    Write-Host $(SimplifyWebResponse -WebResponse $response)
+}
+
 function New-Story(
     [string] $ApiToken,
     [string] $Name,
@@ -110,6 +138,8 @@ function New-Story(
             -AttachmentName $attachment.name `
             -StoryId $newStoryId
     }
+
+    return $newStoryId
 }
 
 function New-Epic(

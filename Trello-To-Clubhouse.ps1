@@ -38,7 +38,7 @@ function ConvertTo-ClubHouseStory([string]$ApiToken, [psobject]$trelloCard, $Use
 
     $labelNames = $trelloCard.labels | Select-Object -ExpandProperty name
 
-    New-Story `
+    $newStoryId = New-Story `
         -ApiToken $ApiToken `
         -Name $trelloCard.name `
         -Description $trelloCard.desc`
@@ -49,6 +49,23 @@ function ConvertTo-ClubHouseStory([string]$ApiToken, [psobject]$trelloCard, $Use
         -WorkflowStateId $workflowState `
         -LabelNames $labelNames `
         -Attachments $trelloCard.attachments
+
+    $commentActions = Get-CardCommentActions `
+        -CardId $trelloCard.id `
+        -AllActions $trelloSrcObj.actions
+
+    foreach ($commentAction in $commentActions) {
+        $commentAuthor = FromTrelloUserIdToClubhouseUserId `
+            -TrelloUserId $commentAction.CommentAuthorUserId `
+            -Users $Users
+
+        New-CommentOnStory `
+            -ApiToken $ApiToken `
+            -StoryId $newStoryId `
+            -CommentAuthor $commentAuthor `
+            -AuthorDate $commentAction.AuthorDate `
+            -CommentContents $commentAction.CommentContents
+    }
 }
 
 function ConvertTo-ClubHouseEpic([string]$ApiToken, [psobject]$trelloCard, $UsersMap) {
