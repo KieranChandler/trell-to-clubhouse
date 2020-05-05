@@ -20,6 +20,31 @@ function Get-EpicId(
         | Select-Object -ExpandProperty id)
 }
 
+function New-UrlAttachmentToStory(
+    [string] $ApiToken,
+    [string] $UrlToAttach,
+    [string] $AttachmentName,
+    [int] $StoryId
+) {
+    Write-Host
+    Write-Host "Linking attachment $AttachmentName to story $StoryId via Clubhouse API.."
+
+    $fileRequestBody = [PSCustomObject]@{
+        name     = $AttachmentName
+        type     = "url"
+        url      = $UrlToAttach
+        story_id = $StoryId
+    } | ConvertTo-Json
+
+    $response = Invoke-WebRequest `
+        -Uri "https://api.clubhouse.io/api/v3/linked-files?token=$ApiToken" `
+        -Method "POST" `
+        -ContentType "application/json" `
+        -Body $fileRequestBody `
+        -UseBasicParsing
+    Write-Host $(SimplifyWebResponse -WebResponse $response)
+}
+
 function New-Story(
     [string] $ApiToken,
     [string] $Name,
@@ -29,6 +54,7 @@ function New-Story(
     [string] $ProjectId,
     [string[]] $OwnerIds,
     [string[]] $LabelNames,
+    $Attachments,
     [int] $WorkflowStateId
 ) {
     if ($null -eq $LabelNames) {
@@ -74,6 +100,16 @@ function New-Story(
         -Body $requestBody `
         -UseBasicParsing
     Write-Host $(SimplifyWebResponse -WebResponse $response)
+
+    $newStoryId = ($response | ConvertFrom-Json).id
+
+    foreach ($attachment in $Attachments) {
+        New-UrlAttachmentToStory `
+            -ApiToken $ApiToken `
+            -UrlToAttach $attachment.url `
+            -AttachmentName $attachment.name `
+            -StoryId $newStoryId
+    }
 }
 
 function New-Epic(
@@ -83,8 +119,7 @@ function New-Epic(
     [string] $Created,
     [string] $Updated,
     [string[]] $OwnerIds,
-    [string[]] $LabelNames,
-    [int[]] $AttachmentIds
+    [string[]] $LabelNames
 ) {
     if ($null -eq $LabelNames) {
         $LabelNames = @()

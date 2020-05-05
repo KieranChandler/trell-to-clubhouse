@@ -47,7 +47,8 @@ function ConvertTo-ClubHouseStory([string]$ApiToken, [psobject]$trelloCard, $Use
         -Updated $trelloCard.dateLastActivity `
         -OwnerIds $ownerIds `
         -WorkflowStateId $workflowState `
-        -LabelNames $labelNames
+        -LabelNames $labelNames `
+        -Attachments $trelloCard.attachments
 }
 
 function ConvertTo-ClubHouseEpic([string]$ApiToken, [psobject]$trelloCard, $UsersMap) {
