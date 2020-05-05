@@ -1,3 +1,7 @@
+function SimplifyWebResponse($WebResponse) {
+    $WebResponse | Select-Object StatusCode,StatusDescription,Content | ConvertTo-Json
+}
+
 function New-Story(
     [string] $ApiToken,
     [string] $Name,
@@ -39,10 +43,13 @@ function New-Story(
         labels  = $labels
     } | ConvertTo-Json
 
+    Write-Host
+    Write-Host "Creating story via Clubhouse API.."
     $response = Invoke-WebRequest `
         -Uri "https://api.clubhouse.io/api/v3/stories?token=$ApiToken" `
         -Method "POST" `
         -ContentType "application/json" `
         -Body $requestBody `
         -UseBasicParsing
+    Write-Host $(SimplifyWebResponse -WebResponse $response)
 }
