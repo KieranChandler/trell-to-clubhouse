@@ -9,8 +9,8 @@ param (
     $WorkflowStateMap
 )
 
-. "./Trello.ps1"
-. "./Clubhouse.ps1"
+. "./Source/Trello.ps1"
+. "./Source/Clubhouse.ps1"
 
 $epicListId = "5e0010e3d50d53272ede97d4"
 

@@ -1,5 +1,5 @@
-. .\Web.ps1
-# . .\Web-Fake.ps1
+. .\Source\Web.ps1
+# . .\Source\Fake\Web-Fake.ps1
 
 function Get-EpicId(
     [string] $ApiToken,
