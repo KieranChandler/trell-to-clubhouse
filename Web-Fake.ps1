@@ -9,3 +9,14 @@ function Invoke-PostRequest(
 
     return "{}"
 }
+
+
+function Invoke-GetRequest(
+    [string] $Uri
+) {
+    Write-Host
+    Write-Host "Invoked URL $Uri"
+    Write-Host
+
+    return "{}"
+}
