@@ -2,6 +2,16 @@ function SimplifyWebResponse($WebResponse) {
     $WebResponse | Select-Object StatusCode, StatusDescription, Content | ConvertTo-Json
 }
 
+function StatusCodeIsSuccess([int] $StatusCode) {
+    ($StatusCode -eq 200 `
+        -or `
+        $StatusCode -eq 201 `
+        -or `
+        $StatusCode -eq 202 `
+        -or `
+        $StatusCode -eq 203)
+}
+
 function Invoke-PostRequest(
     [string] $Uri,
     [PSCustomObject] $RequestBodyObj
@@ -12,9 +22,6 @@ function Invoke-PostRequest(
         -ContentType "application/json" `
         -Body $RequestBodyObj `
         -UseBasicParsing
-
-    Write-Host $(SimplifyWebResponse -WebResponse $response)
-    Write-Host
 
     return $response
 }
@@ -29,9 +36,6 @@ function Invoke-PutRequest(
         -ContentType "application/json" `
         -Body $RequestBodyObj `
         -UseBasicParsing
-
-    Write-Host $(SimplifyWebResponse -WebResponse $response)
-    Write-Host
 
     return $response
 }

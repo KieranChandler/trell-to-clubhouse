@@ -34,6 +34,13 @@ function New-UrlAttachmentToStory(
     $response = Invoke-PostRequest `
         -Uri "https://api.clubhouse.io/api/v3/linked-files?token=$ApiToken" `
         -RequestBodyObj $fileRequestBody
+
+    if (StatusCodeIsSuccess -StatusCode $response.StatusCode) { 
+        Write-Host "Attachment linked" -ForegroundColor Green
+    }
+    else {
+        Write-Host "Attachment NOT linked" -ForegroundColor Red
+    }
 }
 
 function New-CommentOnStory(
@@ -58,6 +65,13 @@ function New-CommentOnStory(
     $response = Invoke-PostRequest `
         -Uri "https://api.clubhouse.io/api/v3/stories/$($StoryId)/comments?token=$ApiToken" `
         -RequestBodyObj $requestBody
+
+    if (StatusCodeIsSuccess -StatusCode $response.StatusCode) { 
+        Write-Host "Comment created" -ForegroundColor Green
+    }
+    else {
+        Write-Host "Comment NOT created" -ForegroundColor Red
+    }
 }
 
 function New-Story(
@@ -113,6 +127,13 @@ function New-Story(
         -RequestBodyObj $requestBody
 
     $newStoryId = ($response | ConvertFrom-Json).id
+
+    if (StatusCodeIsSuccess -StatusCode $response.StatusCode) { 
+        Write-Host "Story $newStoryId created" -ForegroundColor Green
+    }
+    else {
+        Write-Host "Story NOT created" -ForegroundColor Red
+    }
 
     foreach ($attachment in $Attachments) {
         New-UrlAttachmentToStory `
@@ -173,6 +194,14 @@ function New-Epic(
         -RequestBodyObj $requestBody
 
     $newEpicId = ($response | ConvertFrom-Json).id
+
+    if (StatusCodeIsSuccess -StatusCode $response.StatusCode) { 
+        Write-Host "Epic $newEpicId created" -ForegroundColor Green
+    }
+    else {
+        Write-Host "Epic NOT created" -ForegroundColor Red
+    }
+
     return $newEpicId
 }
 
@@ -198,4 +227,10 @@ function New-StoryToEpicLink(
     $response = Invoke-PutRequest `
         -Uri "https://api.clubhouse.io/api/v3/stories/$($StoryId)?token=$ApiToken" `
         -RequestBodyObj $requestBody
+
+    if (StatusCodeIsSuccess -StatusCode $response.StatusCode) { 
+        Write-Host "Epic link created" -ForegroundColor Green
+    } else {
+        Write-Host "Epic link NOT created" -ForegroundColor Red
+    }
 }
