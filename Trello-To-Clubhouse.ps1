@@ -12,6 +12,8 @@ param (
 . "./Trello.ps1"
 . "./Clubhouse.ps1"
 
+$epicListId = "5e0010e3d50d53272ede97d4"
+
 $trelloSrcObj = ($TrelloSrcJson | ConvertFrom-Json)
 
 function FromTrelloUserIdToClubhouseUserId($TrelloUserId, $Users) {
@@ -66,6 +68,18 @@ function ConvertTo-ClubHouseStory([string]$ApiToken, [psobject]$trelloCard, $Use
             -AuthorDate $commentAction.AuthorDate `
             -CommentContents $commentAction.CommentContents
     }
+
+    $epicName = (Get-EpicCardBelongsTo `
+            -AllCards $trelloSrcObj.cards `
+            -EpicListId $epicListId `
+            -Card $trelloCard)
+
+    if ($null -ne $epicName) {
+        New-StoryToEpicLink `
+            -ApiToken $ApiToken `
+            -StoryId $newStoryId `
+            -EpicName $epicName
+    }
 }
 
 function ConvertTo-ClubHouseEpic([string]$ApiToken, [psobject]$trelloCard, $UsersMap) {
@@ -109,7 +123,6 @@ function ConvertTo-ClubHouseEpic([string]$ApiToken, [psobject]$trelloCard, $User
     }
 }
 
-$epicListId = "5e0010e3d50d53272ede97d4"
 foreach ($card in $trelloSrcObj.Cards) {
     $isNotAnArchivedCard = -not $card.closed
     $isNotAMilestoneCard = $card.idList -ne $epicListId

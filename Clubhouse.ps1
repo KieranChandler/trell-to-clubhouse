@@ -175,3 +175,27 @@ function New-Epic(
     $newEpicId = ($response | ConvertFrom-Json).id
     return $newEpicId
 }
+
+function New-StoryToEpicLink(
+    [string] $ApiToken,
+    [string] $EpicName,
+    [int] $StoryId
+) {
+    $listEpicsResponse = Invoke-GetRequest `
+        -Uri "https://api.clubhouse.io/api/v3/epics?token=$ApiToken"
+
+    $x = ($listEpicsResponse.Content | ConvertFrom-Json) # No idea why this needs to be separate from the line below
+    $epic = ($x `
+        | Where-Object { -not $_.archived } `
+        | Where-Object { $_.name -eq $EpicName })
+
+    $requestBody = [PSCustomObject]@{
+        epic_id = $epic.id
+    } | ConvertTo-Json
+
+    Write-Host
+    Write-Host "Adding story $StoryId to epic $($epic.id) via Clubhouse API.."
+    $response = Invoke-PutRequest `
+        -Uri "https://api.clubhouse.io/api/v3/stories/$($StoryId)?token=$ApiToken" `
+        -RequestBodyObj $requestBody
+}

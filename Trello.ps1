@@ -26,3 +26,18 @@ function Get-CardCommentActions($CardId, $AllActions) {
     }
     return $actionsToReturn
 }
+
+function Get-EpicCardBelongsTo(
+    $AllCards,
+    $Card
+) {
+    $epicCardId = ($Card.pluginData `
+        | Where-Object { $_.idPlugin -eq "5b7ae739fad82e45988016cf" } `
+        | Select-Object -ExpandProperty value `
+        | ConvertFrom-Json `
+        | Select-Object -ExpandProperty epicId)
+
+    return ($AllCards `
+        | Where-Object { $_.id -eq $epicCardId } `
+        | Select-Object -ExpandProperty name)
+}

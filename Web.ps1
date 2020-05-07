@@ -19,6 +19,23 @@ function Invoke-PostRequest(
     return $response
 }
 
+function Invoke-PutRequest(
+    [string] $Uri,
+    [PSCustomObject] $RequestBodyObj
+) {
+    $response = Invoke-WebRequest `
+        -Uri $Uri `
+        -Method "Put" `
+        -ContentType "application/json" `
+        -Body $RequestBodyObj `
+        -UseBasicParsing
+
+    Write-Host $(SimplifyWebResponse -WebResponse $response)
+    Write-Host
+
+    return $response
+}
+
 function Invoke-GetRequest(
     [string] $Uri
 ) {

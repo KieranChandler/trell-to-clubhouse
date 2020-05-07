@@ -10,6 +10,17 @@ function Invoke-PostRequest(
     return "{}"
 }
 
+function Invoke-PutRequest(
+    [string] $Uri,
+    [PSCustomObject] $RequestBodyObj
+) {
+    Write-Host
+    Write-Host "Invoked URL $Uri with request body: "
+    Write-Host $RequestBodyObj | ConvertTo-Json
+    Write-Host
+
+    return "{}"
+}
 
 function Invoke-GetRequest(
     [string] $Uri
